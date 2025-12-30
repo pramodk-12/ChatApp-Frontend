@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Circle } from "lucide-react";
 
-const PresenceList = ({ onlineUsers }) => {
-  // This forceUpdate state triggers a re-render every minute
+const PresenceList = ({ onlineUsers, onUserClick }) => {
   const [, setTick] = useState(0);
 
+  // Force update every minute to refresh "X mins ago"
   useEffect(() => {
     const interval = setInterval(() => setTick((t) => t + 1), 60000);
     return () => clearInterval(interval);
@@ -34,6 +34,7 @@ const PresenceList = ({ onlineUsers }) => {
       {onlineUsers.map((user) => (
         <div
           key={user.userId}
+          onClick={() => onUserClick(user.userId)}
           className="group flex items-center gap-3 p-2 hover:bg-indigo-50 rounded-xl transition-all cursor-pointer"
         >
           <div className="relative">
