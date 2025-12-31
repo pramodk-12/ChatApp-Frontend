@@ -7,7 +7,6 @@ const MessageInput = ({ auth, activeChatId, activeChat, sendMessage, input, setI
   const [isUploading, setIsUploading] = useState(false);
   const [uploadedUrl, setUploadedUrl] = useState(null);
   const fileRef = useRef();
-
   const handleUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -37,7 +36,8 @@ const MessageInput = ({ auth, activeChatId, activeChat, sendMessage, input, setI
     sendMessage(`/app/chat/${activeChatId}/typing`, { isTyping: false, username: auth.username });
   };
 
-  if (activeChat?.isReadOnly) {
+  if (activeChat?.readOnly) {
+    console.log("read only chat");
     return (
       <div className="p-6 text-center text-[10px] font-black uppercase text-slate-400 tracking-widest bg-slate-50">
         This conversation is read-only

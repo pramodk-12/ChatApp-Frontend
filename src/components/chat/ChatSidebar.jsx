@@ -8,48 +8,138 @@ import { LogOut, UserPlus, MessageSquare, Hash, Camera } from "lucide-react";
 import PresenceList from "../PresenceList";
 import FriendList from "../FriendList";
 
-const Sidebar = ({ auth, myChats, activeChatId, setActiveChatId, sidebarView, setSidebarView, onlineUsers, handleContactClick, setShowGroupModal, onLogout }) => {
+const Sidebar = ({
+  auth,
+  myChats,
+  activeChatId,
+  setActiveChatId,
+  sidebarView,
+  setSidebarView,
+  onlineUsers,
+  handleContactClick,
+  setShowGroupModal,
+  onLogout,
+}) => {
   return (
     <aside className="w-[320px] flex flex-col bg-slate-50/50 border-r border-slate-100">
       <div className="p-6">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-black tracking-tighter">CHATLY</h2>
-          <Button variant="ghost" size="icon" onClick={onLogout} className="text-slate-400 hover:text-red-500 rounded-full">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onLogout}
+            className="text-slate-400 hover:text-red-500 rounded-full"
+          >
             <LogOut size={18} />
           </Button>
         </div>
 
         <div className="flex bg-slate-200/50 p-1 rounded-lg">
-          <button onClick={() => setSidebarView("chats")} className={`flex-1 py-1.5 text-[10px] font-black rounded-md transition-all ${sidebarView === "chats" ? "bg-white shadow-sm text-slate-900" : "text-slate-500"}`}>CHATS</button>
-          <button onClick={() => setSidebarView("friends")} className={`flex-1 py-1.5 text-[10px] font-black rounded-md transition-all ${sidebarView === "friends" ? "bg-white shadow-sm text-slate-900" : "text-slate-500"}`}>FRIENDS</button>
+          <button
+            onClick={() => setSidebarView("chats")}
+            className={`flex-1 py-1.5 text-[10px] font-black rounded-md transition-all ${
+              sidebarView === "chats"
+                ? "bg-white shadow-sm text-slate-900"
+                : "text-slate-500"
+            }`}
+          >
+            CHATS
+          </button>
+          <button
+            onClick={() => setSidebarView("friends")}
+            className={`flex-1 py-1.5 text-[10px] font-black rounded-md transition-all ${
+              sidebarView === "friends"
+                ? "bg-white shadow-sm text-slate-900"
+                : "text-slate-500"
+            }`}
+          >
+            FRIENDS
+          </button>
         </div>
       </div>
 
       <ScrollArea className="flex-1 px-4">
         {sidebarView === "chats" ? (
           <div className="space-y-6">
-            <Button variant="outline" className="w-full justify-start gap-3 border-dashed border-slate-300 h-12 rounded-xl text-slate-500" onClick={() => setShowGroupModal(true)}>
-              <UserPlus size={16} /> <span className="text-[10px] font-black uppercase">New Group</span>
+            <Button
+              variant="outline"
+              className="w-full justify-start gap-3 border-dashed border-slate-300 h-12 rounded-xl text-slate-500"
+              onClick={() => setShowGroupModal(true)}
+            >
+              <UserPlus size={16} />{" "}
+              <span className="text-[10px] font-black uppercase">
+                New Group
+              </span>
             </Button>
             <div className="space-y-1">
-              <h3 className="px-2 text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Recent</h3>
-              {myChats.map(chat => (
-                <div key={chat.id} onClick={() => setActiveChatId(chat.id)} className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all ${activeChatId === chat.id ? "bg-slate-900 text-white shadow-lg shadow-slate-200" : "hover:bg-slate-200/50"}`}>
-                  <div className={`h-10 w-10 rounded-full flex items-center justify-center ${activeChatId === chat.id ? "bg-white/10" : "bg-slate-200 text-slate-500"}`}>
-                    {chat.type === "PRIVATE" ? <MessageSquare size={16} /> : <Hash size={16} />}
-                  </div>
+              <h3 className="px-2 text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">
+                Recent
+              </h3>
+              {myChats.map((chat) => (
+                <div
+                  key={chat.id}
+                  onClick={() => setActiveChatId(chat.id)}
+                  className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all ${
+                    activeChatId === chat.id
+                      ? "bg-slate-900 text-white shadow-lg shadow-slate-200"
+                      : "hover:bg-slate-200/50"
+                  }`}
+                >
+                  <Avatar
+                    className={`h-10 w-10 border ${
+                      activeChatId === chat.id
+                        ? "border-white/10"
+                        : "border-slate-200"
+                    }`}
+                  >
+                    <AvatarImage
+                      src={chat.avatarUrl}
+                      className="object-cover"
+                    />
+                    <AvatarFallback
+                      className={
+                        activeChatId === chat.id
+                          ? "bg-white/10 text-white"
+                          : "bg-slate-200 text-slate-500"
+                      }
+                    >
+                      {chat.type === "PRIVATE" ? (
+                        chat.name.charAt(0).toUpperCase()
+                      ) : (
+                        <Hash size={16} />
+                      )}
+                    </AvatarFallback>
+                  </Avatar>
                   <div className="flex-1 overflow-hidden">
                     <p className="font-bold text-sm truncate">{chat.name}</p>
-                    <p className={`text-[10px] ${activeChatId === chat.id ? "text-slate-400" : "text-slate-500"}`}>{chat.type.toLowerCase()}</p>
+                    <p
+                      className={`text-[10px] ${
+                        activeChatId === chat.id
+                          ? "text-slate-400"
+                          : "text-slate-500"
+                      }`}
+                    >
+                      {chat.type.toLowerCase()}
+                    </p>
                   </div>
                 </div>
               ))}
             </div>
             <Separator className="bg-slate-200/50" />
-            <PresenceList onlineUsers={onlineUsers} onUserClick={handleContactClick} />
+            <PresenceList
+              onlineUsers={onlineUsers}
+              onUserClick={handleContactClick}
+            />
           </div>
         ) : (
-          <FriendList auth={auth} onChatStart={(id) => { handleContactClick(id); setSidebarView("chats"); }} />
+          <FriendList
+            auth={auth}
+            onChatStart={(id) => {
+              handleContactClick(id);
+              setSidebarView("chats");
+            }}
+          />
         )}
       </ScrollArea>
 
@@ -57,11 +147,20 @@ const Sidebar = ({ auth, myChats, activeChatId, setActiveChatId, sidebarView, se
         <div className="flex items-center gap-3 p-2 rounded-xl border border-slate-100">
           <Avatar className="h-10 w-10 border-2 border-slate-50">
             <AvatarImage src={auth.avatarUrl} />
-            <AvatarFallback className="bg-slate-900 text-white font-black">{auth.username[0].toUpperCase()}</AvatarFallback>
+            <AvatarFallback className="bg-slate-900 text-white font-black">
+              {auth.username[0].toUpperCase()}
+            </AvatarFallback>
           </Avatar>
           <div className="flex-1 overflow-hidden">
-            <p className="text-xs font-black text-slate-900 uppercase truncate">{auth.displayName || auth.username}</p>
-            <Badge variant="outline" className="text-[9px] h-4 bg-green-50 text-green-700 border-green-200">Online</Badge>
+            <p className="text-xs font-black text-slate-900 uppercase truncate">
+              {auth.displayName || auth.username}
+            </p>
+            <Badge
+              variant="outline"
+              className="text-[9px] h-4 bg-green-50 text-green-700 border-green-200"
+            >
+              Online
+            </Badge>
           </div>
         </div>
       </div>

@@ -1,11 +1,13 @@
 import React from "react";
 import { Trash2 } from "lucide-react";
+import MessageStatusIcons from "./MessageStatusIcons";
 
 const MessageList = ({ messages, authId, onDelete }) => {
   return (
     <div className="space-y-6 pb-4">
       {messages.map((m, i) => {
         const isMe = m.senderId === authId;
+        const isDeleted = m.isDeleted;
         const time = m.timestamp
           ? new Date(m.timestamp).toLocaleTimeString([], {
               hour: "2-digit",
@@ -16,15 +18,21 @@ const MessageList = ({ messages, authId, onDelete }) => {
         return (
           <div
             key={m.id || i}
-            className={`flex ${isMe ? "justify-end" : "justify-start"} group animate-in fade-in slide-in-from-bottom-2 duration-300`}
+            className={`flex ${
+              isMe ? "justify-end" : "justify-start"
+            } group animate-in fade-in slide-in-from-bottom-2 duration-300`}
           >
-            <div className={`flex flex-col ${isMe ? "items-end" : "items-start"} max-w-[85%] md:max-w-[70%]`}>
+            <div
+              className={`flex flex-col ${
+                isMe ? "items-end" : "items-start"
+              } max-w-[85%] md:max-w-[70%]`}
+            >
               {!isMe && (
                 <span className="text-[10px] font-black text-slate-400 mb-1.5 ml-1 uppercase tracking-tighter">
                   {m.senderName}
                 </span>
               )}
-              
+
               <div className="relative flex items-center gap-2">
                 {/* Delete Button - Shows on Hover for User's messages */}
                 {isMe && !m.isDeleted && (
@@ -67,6 +75,7 @@ const MessageList = ({ messages, authId, onDelete }) => {
               <span className="text-[9px] text-slate-400 mt-1.5 mx-1 font-bold uppercase tracking-tighter opacity-70">
                 {time}
               </span>
+              {isMe && !isDeleted && <MessageStatusIcons status={m.status} />}
             </div>
           </div>
         );

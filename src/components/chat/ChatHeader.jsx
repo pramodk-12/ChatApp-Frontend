@@ -6,11 +6,21 @@ const ChatHeader = ({ activeChat, typingUser }) => {
   return (
     <header className="h-18.25 flex items-center justify-between px-8 border-b border-slate-100 bg-white/80 backdrop-blur-md sticky top-0 z-10">
       <div className="flex items-center gap-4">
-        <div className="h-10 w-10 rounded-full bg-slate-900 flex items-center justify-center text-white shadow-lg shadow-slate-200">
-          {activeChat?.type === "PRIVATE" ? (
-            <MessageSquare size={18} />
+        <div className="h-10 w-10 rounded-full overflow-hidden bg-slate-900 flex items-center justify-center text-white shadow-lg shadow-slate-200">
+          {activeChat?.avatarUrl ? (
+            <img
+              src={activeChat.avatarUrl}
+              alt=""
+              className="h-full w-full object-cover"
+            />
           ) : (
-            <Hash size={18} />
+            <div className="h-full w-full bg-slate-900 flex items-center justify-center text-white">
+              {activeChat?.type === "PRIVATE" ? (
+                <MessageSquare size={18} />
+              ) : (
+                <Hash size={18} />
+              )}
+            </div>
           )}
         </div>
         <div>
@@ -34,7 +44,11 @@ const ChatHeader = ({ activeChat, typingUser }) => {
         </div>
       </div>
       <div className="flex items-center gap-2">
-        <Button variant="ghost" size="icon" className="text-slate-400 rounded-full">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="text-slate-400 rounded-full"
+        >
           <MoreVertical size={18} />
         </Button>
       </div>

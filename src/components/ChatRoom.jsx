@@ -43,23 +43,71 @@ const ChatRoom = ({ auth, onLogout }) => {
 
   // --- Logic: Fetching History ---
   useEffect(() => {
-    if (!activeChatId) return;
-    const fetchHistory = async () => {
-      setIsLoading(true);
-      try {
-        const response = await fetch(`http://localhost:8080/api/messages/${activeChatId}?limit=30`, {
+  if (!activeChatId) return;
+
+  const loadChatData = async () => {
+    setIsLoading(true);
+    try {
+      // 1. Fetch History FIRST
+      const response = await fetch(
+        `http://localhost:8080/api/messages/${activeChatId}?limit=30`,
+        { headers: { Authorization: `Bearer ${auth.token}` } }
+      );
+
+      if (response.ok) {
+        const history = await response.json();
+        setMessages(history.reverse());
+
+        // 2. ONLY if history loaded successfully, notify server and clear UI
+        await fetch(`http://localhost:8080/api/chats/${activeChatId}/read`, {
+          method: "POST",
           headers: { Authorization: `Bearer ${auth.token}` },
         });
-        if (response.ok) {
-          const history = await response.json();
-          setMessages(history.reverse());
-        }
-      } catch (err) { console.error(err); }
-      finally { setIsLoading(false); }
-    };
-    fetchHistory();
-    setTypingUser(null);
-  }, [activeChatId, auth.token]);
+
+        setMyChats((prev) =>
+          prev.map((chat) =>
+            chat.id === activeChatId ? { ...chat, unreadCount: 0 } : chat
+          )
+        );
+      } else {
+        throw new Error("Failed to load history");
+      }
+    } catch (err) {
+      console.error("Chat loading failed:", err);
+      // 3. Handle Failure: Keep the unread count and show a toast/error
+      // Maybe setMessages([]) or show a "Retry" button
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  loadChatData();
+  setTypingUser(null);
+}, [activeChatId, auth.token]);
+
+
+useEffect(() => {
+  // If there are no messages or no active chat, do nothing
+  if (!activeChatId || messages.length === 0) return;
+
+  const lastMessage = messages[messages.length - 1];
+
+  // 🟢 THE GAP CLOSER:
+  // If the last message was sent by the OTHER person AND it is not 'READ' yet
+  if (lastMessage.senderId !== auth.id && lastMessage.status !== "READ") {
+    console.log("Auto-marking as read:", lastMessage.id);
+    // Trigger the Read API immediately
+    fetch(`http://localhost:8080/api/chats/${activeChatId}/read`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${auth.token}` },
+    }).catch(err => console.error("Auto-read failed:", err));
+
+    // Locally update the status so we don't trigger this effect again for the same message
+    setMessages(prev => prev.map(m => 
+      m.id === lastMessage.id ? { ...m, status: 'READ' } : m
+    ));
+  }
+}, [messages, activeChatId]);
 
   // --- STOMP Connection ---
   const { sendMessage, disconnect } = useStomp(auth.token, (client) => {
@@ -80,13 +128,26 @@ const ChatRoom = ({ auth, onLogout }) => {
       }
     });
 
+    // 2. Subscribe to Status Updates (Read Receipts / Deletions)
+  const statusSub = stompClient.subscribe(`/topic/chats/${activeChatId}/status`, (msg) => {
+    const data = JSON.parse(msg.body);
+    
+    setMessages((prev) => prev.map((m) => {
+      // Handle Read Receipts
+      if (data.status === "READ" && m.senderId === auth.id) {
+        return { ...m, status: "READ" };
+      }
+      return m;
+    }));
+  });
+
     const typingSub = stompClient.subscribe(`/topic/chats/${activeChatId}/typing`, (msg) => {
       const data = JSON.parse(msg.body);
       if (data.username !== auth.username) setTypingUser(data.isTyping ? data.username : null);
     });
 
     subscriptionRef.current = sub;
-    return () => { sub?.unsubscribe(); typingSub?.unsubscribe(); };
+    return () => { sub?.unsubscribe(); typingSub?.unsubscribe(); statusSub?.unsubscribe(); };
   }, [activeChatId, stompClient, auth.username]);
 
   useEffect(() => {
