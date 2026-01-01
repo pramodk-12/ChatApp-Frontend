@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { UserPlus, Check, X, MessageSquare, Search } from "lucide-react";
+import { toast } from "sonner";
 
 const FriendList = ({ auth, onChatStart }) => {
   const [activeTab, setActiveTab] = useState("friends"); // friends | requests | add
@@ -53,13 +54,28 @@ const FriendList = ({ auth, onChatStart }) => {
   };
 
   const sendRequest = async (userId) => {
+  // Start a loading toast if you want it to feel really fast
+  const toastId = toast.loading("Sending friend request...");
+
+  try {
     const res = await fetch(`http://localhost:8080/api/friends/request/${userId}`, {
       method: "POST",
       headers: { Authorization: `Bearer ${auth.token}` },
     });
-    if (res.ok) alert("Request Sent!");
-    else alert("Failed to send request (maybe already sent?)");
-  };
+
+    if (res.ok) {
+      // 🟢 Update the loading toast to success
+      toast.success("Request sent successfully!", { id: toastId });
+    } else {
+      // 🔴 Update the loading toast to error
+      const errorData = await res.json().catch(() => ({}));
+      toast.error(errorData.message || "Failed to send request. Already sent?", { id: toastId });
+    }
+  } catch (err) {
+    toast.error("Network error. Please try again.", { id: toastId });
+    console.error(err);
+  }
+};
 
   return (
     <div className="flex flex-col h-full bg-white">

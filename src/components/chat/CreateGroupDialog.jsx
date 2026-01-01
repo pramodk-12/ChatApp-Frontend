@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { X, Check } from "lucide-react";
 
-const CreateGroupModal = ({ auth, onClose, onGroupCreated }) => {
+const CreateGroupDialog = ({ auth, onClose, onGroupCreated }) => {
   const [friends, setFriends] = useState([]);
   const [groupName, setGroupName] = useState("");
   const [selectedIds, setSelectedIds] = useState([]);
@@ -124,4 +124,4 @@ const CreateGroupModal = ({ auth, onClose, onGroupCreated }) => {
   );
 };
 
-export default CreateGroupModal;
+export default CreateGroupDialog;
