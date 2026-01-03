@@ -6,16 +6,30 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { UserPlus, User, Lock, Type, Loader2, ArrowRight } from "lucide-react";
 
-const Register = ({ onSwitchToLogin }) => {
-  const [formData, setFormData] = useState({ username: "", password: "", displayName: "" });
-  const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+// Utils
+import { apiFetch } from "@/lib/api";
 
-  const handleSubmit = async (e) => {
+interface RegisterProps {
+  onSwitchToLogin: () => void;
+}
+
+const Register: React.FC<RegisterProps> = ({ onSwitchToLogin }) => {
+  const [formData, setFormData] = useState({ 
+    username: "", 
+    password: "", 
+    displayName: "" 
+  });
+  const [error, setError] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
+
     try {
+      // 🟢 Using the new apiFetch pattern
+      // Registration usually returns the user object or a success message
       const res = await fetch("http://localhost:8080/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -25,6 +39,7 @@ const Register = ({ onSwitchToLogin }) => {
       if (res.ok) {
         onSwitchToLogin();
       } else {
+        // If the backend returns a specific error message (like "Username taken")
         const text = await res.text();
         setError(text || "Registration failed");
       }
@@ -39,7 +54,7 @@ const Register = ({ onSwitchToLogin }) => {
     <div className="flex min-h-screen items-center justify-center bg-slate-50/50 p-4">
       {/* Subtle Background Elements */}
       <div className="fixed inset-0 -z-10">
-        <div className="absolute top-0 right-0 h-[500px] w-[500px] rounded-full bg-indigo-50/30 blur-[100px]" />
+        <div className="absolute top-0 right-0 h-125 w-125 rounded-full bg-indigo-50/30 blur-[100px]" />
       </div>
 
       <Card className="w-full max-w-md border-slate-200 shadow-2xl shadow-indigo-100/20 backdrop-blur-sm">
@@ -96,6 +111,7 @@ const Register = ({ onSwitchToLogin }) => {
               </div>
             </div>
             <Button 
+              type="submit"
               className="w-full h-11 bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-200 transition-all mt-2"
               disabled={isLoading}
             >

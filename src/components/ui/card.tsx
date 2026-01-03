@@ -1,11 +1,13 @@
 import * as React from "react"
-
 import { cn } from "@/lib/utils"
+
+// We use React.HTMLAttributes<HTMLDivElement> for all these 
+// because they all render as <div> elements.
 
 function Card({
   className,
   ...props
-}) {
+}: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
       data-slot="card"
@@ -20,7 +22,7 @@ function Card({
 function CardHeader({
   className,
   ...props
-}) {
+}: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
       data-slot="card-header"
@@ -35,7 +37,7 @@ function CardHeader({
 function CardTitle({
   className,
   ...props
-}) {
+}: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
       data-slot="card-title"
@@ -47,7 +49,7 @@ function CardTitle({
 function CardDescription({
   className,
   ...props
-}) {
+}: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
       data-slot="card-description"
@@ -59,7 +61,7 @@ function CardDescription({
 function CardAction({
   className,
   ...props
-}) {
+}: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
       data-slot="card-action"
@@ -74,14 +76,20 @@ function CardAction({
 function CardContent({
   className,
   ...props
-}) {
-  return (<div data-slot="card-content" className={cn("px-6", className)} {...props} />);
+}: React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div 
+      data-slot="card-content" 
+      className={cn("px-6", className)} 
+      {...props} 
+    />
+  );
 }
 
 function CardFooter({
   className,
   ...props
-}) {
+}: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
       data-slot="card-footer"

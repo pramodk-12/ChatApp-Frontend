@@ -6,27 +6,38 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, Lock, User } from "lucide-react";
 
-const Login = ({ onLogin, onSwitchToRegister }) => {
-  const [form, setForm] = useState({ username: "", password: "" });
-  const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+// Types & Utils
+import { UserAuth } from "@/types";
+import { apiFetch } from "@/lib/api";
 
-  const handleSubmit = async (e) => {
+interface LoginProps {
+  onLogin: (data: UserAuth) => void;
+  onSwitchToRegister: () => void;
+}
+
+const Login: React.FC<LoginProps> = ({ onLogin, onSwitchToRegister }) => {
+  const [form, setForm] = useState({ username: "", password: "" });
+  const [error, setError] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
+
     try {
-      const response = await fetch("http://localhost:8080/api/auth/login", {
+      // 🟢 Using our new apiFetch pattern
+      // We explicitly expect UserAuth as the return type
+      const data = await apiFetch<UserAuth>("/api/auth/login", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        if (data.token) onLogin(data);
-        else setError("Invalid response from server");
+      if (data && data.token) {
+        onLogin(data);
       } else {
+        // If data is null, apiFetch handles the session/401 logic, 
+        // but for a login page, we show a local error message.
         setError("Invalid username or password");
       }
     } catch (err) {
@@ -68,7 +79,7 @@ const Login = ({ onLogin, onSwitchToRegister }) => {
                   id="username"
                   placeholder="johndoe"
                   className="pl-10 h-11 border-slate-200 focus-visible:ring-indigo-500"
-                  onChange={(e) => setForm({ ...form, username: e.target.value })}
+                  onChange={(e:any) => setForm({ ...form, username: e.target.value })}
                   required
                 />
               </div>
@@ -81,7 +92,7 @@ const Login = ({ onLogin, onSwitchToRegister }) => {
                   id="password"
                   type="password"
                   className="pl-10 h-11 border-slate-200 focus-visible:ring-indigo-500"
-                  onChange={(e) => setForm({ ...form, password: e.target.value })}
+                  onChange={(e:any) => setForm({ ...form, password: e.target.value })}
                   required
                 />
               </div>

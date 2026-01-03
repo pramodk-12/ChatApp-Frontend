@@ -1,7 +1,14 @@
 import React from "react";
 import { Check, CheckCheck } from "lucide-react";
 
-const MessageStatusIcons = ({ status }) => {
+// 🟢 Define the valid status strings based on your Backend Enum
+export type MessageStatus = "SENT" | "DELIVERED" | "READ";
+
+interface MessageStatusIconsProps {
+  status: MessageStatus;
+}
+
+const MessageStatusIcons: React.FC<MessageStatusIconsProps> = ({ status }) => {
   // We use different colors and icons based on the SENT, DELIVERED, READ status
   switch (status) {
     case "READ":
@@ -23,6 +30,7 @@ const MessageStatusIcons = ({ status }) => {
         </div>
       );
     default:
+      // TypeScript will flag this if 'status' isn't one of the union types above
       return null;
   }
 };

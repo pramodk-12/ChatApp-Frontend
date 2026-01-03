@@ -1,5 +1,5 @@
 import * as React from "react"
-import { cva } from "class-variance-authority";
+import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
 
@@ -19,11 +19,17 @@ const alertVariants = cva(
   }
 )
 
+// 🟢 Define the props for the Alert component
+// We extend standard HTML div attributes and add the variants from CVA
+interface AlertProps 
+  extends React.HTMLAttributes<HTMLDivElement>, 
+    VariantProps<typeof alertVariants> {}
+
 function Alert({
   className,
   variant,
   ...props
-}) {
+}: AlertProps) {
   return (
     <div
       data-slot="alert"
@@ -33,10 +39,12 @@ function Alert({
   );
 }
 
+// 🟢 Define props for AlertTitle and AlertDescription
+// These are standard HTML div attributes
 function AlertTitle({
   className,
   ...props
-}) {
+}: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
       data-slot="alert-title"
@@ -48,7 +56,7 @@ function AlertTitle({
 function AlertDescription({
   className,
   ...props
-}) {
+}: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
       data-slot="alert-description"

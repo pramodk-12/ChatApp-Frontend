@@ -5,10 +5,11 @@ import * as TabsPrimitive from "@radix-ui/react-tabs"
 
 import { cn } from "@/lib/utils"
 
+// 🟢 Tabs Root Component
 function Tabs({
   className,
   ...props
-}) {
+}: React.ComponentPropsWithoutRef<typeof TabsPrimitive.Root>) {
   return (
     <TabsPrimitive.Root
       data-slot="tabs"
@@ -17,10 +18,11 @@ function Tabs({
   );
 }
 
+// 🟢 Tabs List (The container for triggers)
 function TabsList({
   className,
   ...props
-}) {
+}: React.ComponentPropsWithoutRef<typeof TabsPrimitive.List>) {
   return (
     <TabsPrimitive.List
       data-slot="tabs-list"
@@ -32,10 +34,11 @@ function TabsList({
   );
 }
 
+// 🟢 Tabs Trigger (The actual buttons)
 function TabsTrigger({
   className,
   ...props
-}) {
+}: React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>) {
   return (
     <TabsPrimitive.Trigger
       data-slot="tabs-trigger"
@@ -47,10 +50,11 @@ function TabsTrigger({
   );
 }
 
+// 🟢 Tabs Content (The panels that show/hide)
 function TabsContent({
   className,
   ...props
-}) {
+}: React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content>) {
   return (
     <TabsPrimitive.Content
       data-slot="tabs-content"

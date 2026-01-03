@@ -1,14 +1,18 @@
+"use client"
+
 import * as React from "react"
 import * as SeparatorPrimitive from "@radix-ui/react-separator"
 
 import { cn } from "@/lib/utils"
 
+// 🟢 Using React.ComponentPropsWithoutRef to pull types from Radix
+// This ensures 'orientation' is correctly typed as "horizontal" | "vertical"
 function Separator({
   className,
   orientation = "horizontal",
   decorative = true,
   ...props
-}) {
+}: React.ComponentPropsWithoutRef<typeof SeparatorPrimitive.Root>) {
   return (
     <SeparatorPrimitive.Root
       data-slot="separator"

@@ -1,15 +1,29 @@
-import React from "react";
-import { useRef } from "react";
+import React, { useRef } from "react";
+import { LogOut, UserPlus, Hash, Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { LogOut, UserPlus, MessageSquare, Hash, Camera } from "lucide-react";
-import PresenceList from "../PresenceList";
+
+// Types & Sub-components
+import { UserAuth, ChatDTO } from "@/types";
 import FriendList from "../FriendList";
 
-const Sidebar = ({
+interface SidebarProps {
+  auth: UserAuth;
+  myChats: ChatDTO[];
+  activeChatId: number | null;
+  setActiveChatId: (id: number) => void;
+  sidebarView: "chats" | "friends";
+  setSidebarView: (view: "chats" | "friends") => void;
+  onlineUsers: number[]; // Array of User IDs
+  handleContactClick: (userId: number) => void;
+  onProfileUpdate: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  setShowGroupModal: (show: boolean) => void;
+  onLogout: () => void;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({
   auth,
   myChats,
   activeChatId,
@@ -22,9 +36,10 @@ const Sidebar = ({
   setShowGroupModal,
   onLogout,
 }) => {
-  const profileInputRef = useRef(null);
+  const profileInputRef = useRef<HTMLInputElement>(null);
+
   return (
-    <aside className="w-[320px] flex flex-col bg-slate-50/50 border-r border-slate-100">
+    <aside className="w-[320px] flex flex-col bg-slate-50/50 border-r border-slate-100 h-full">
       <div className="p-6">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-black tracking-tighter">CHATLY</h2>
@@ -32,19 +47,20 @@ const Sidebar = ({
             variant="ghost"
             size="icon"
             onClick={onLogout}
-            className="text-slate-400 hover:text-red-500 rounded-full"
+            className="text-slate-400 hover:text-red-500 rounded-full transition-colors"
           >
             <LogOut size={18} />
           </Button>
         </div>
 
+        {/* View Toggler */}
         <div className="flex bg-slate-200/50 p-1 rounded-lg">
           <button
             onClick={() => setSidebarView("chats")}
             className={`flex-1 py-1.5 text-[10px] font-black rounded-md transition-all ${
               sidebarView === "chats"
                 ? "bg-white shadow-sm text-slate-900"
-                : "text-slate-500"
+                : "text-slate-500 hover:text-slate-700"
             }`}
           >
             CHATS
@@ -54,7 +70,7 @@ const Sidebar = ({
             className={`flex-1 py-1.5 text-[10px] font-black rounded-md transition-all ${
               sidebarView === "friends"
                 ? "bg-white shadow-sm text-slate-900"
-                : "text-slate-500"
+                : "text-slate-500 hover:text-slate-700"
             }`}
           >
             FRIENDS
@@ -68,7 +84,7 @@ const Sidebar = ({
             {/* New Group Button */}
             <Button
               variant="outline"
-              className="w-full justify-start gap-3 border-dashed border-slate-300 h-12 rounded-xl text-slate-500 mt-4"
+              className="w-full justify-start gap-3 border-dashed border-slate-300 h-12 rounded-xl text-slate-500 mt-4 hover:border-slate-400 hover:bg-slate-100/50 transition-all"
               onClick={() => setShowGroupModal(true)}
             >
               <UserPlus size={16} />
@@ -94,7 +110,6 @@ const Sidebar = ({
                         : "hover:bg-slate-200/50"
                     }`}
                   >
-                    {/* 🟢 AVATAR WITH ONLINE STATUS DOT */}
                     <div className="relative">
                       <Avatar
                         className={`h-10 w-10 border ${
@@ -122,8 +137,9 @@ const Sidebar = ({
                         </AvatarFallback>
                       </Avatar>
 
-                      {/* 🟢 Online Indicator (Only for Private Chats) */}
+                      {/* Online Indicator for Private Chats */}
                       {chat.type === "PRIVATE" &&
+                        chat.otherUserId &&
                         onlineUsers.includes(chat.otherUserId) && (
                           <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white bg-green-500" />
                         )}
@@ -132,7 +148,7 @@ const Sidebar = ({
                     <div className="flex-1 overflow-hidden">
                       <p className="font-bold text-sm truncate">{chat.name}</p>
                       <p
-                        className={`text-[10px] ${
+                        className={`text-[10px] uppercase font-black tracking-tighter ${
                           activeChatId === chat.id
                             ? "text-slate-400"
                             : "text-slate-500"
@@ -155,8 +171,7 @@ const Sidebar = ({
         ) : (
           <FriendList
             auth={auth}
-            onlineUsers={onlineUsers} // 🟢 Pass online status to FriendList too
-            onChatStart={(id) => {
+            onChatStart={(id: number) => {
               handleContactClick(id);
               setSidebarView("chats");
             }}
@@ -164,14 +179,13 @@ const Sidebar = ({
         )}
       </ScrollArea>
 
+      {/* User Profile Footer */}
       <div className="p-4 bg-white border-t border-slate-100">
         <div className="flex items-center gap-3 p-2 rounded-xl border border-slate-100">
-          {/* 🟢 CLICKABLE AVATAR CONTAINER */}
           <div
-            className="relative group cursor-pointer h-10 w-10 flex-shrink-0"
+            className="relative group cursor-pointer h-10 w-10 shrink-0"
             onClick={() => profileInputRef.current?.click()}
           >
-            {/* Hidden Input */}
             <input
               type="file"
               ref={profileInputRef}
@@ -187,7 +201,6 @@ const Sidebar = ({
               </AvatarFallback>
             </Avatar>
 
-            {/* Hover Overlay */}
             <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all">
               <Camera size={12} className="text-white" />
             </div>
@@ -199,7 +212,7 @@ const Sidebar = ({
             </p>
             <Badge
               variant="outline"
-              className="text-[9px] h-4 bg-green-50 text-green-700 border-green-200"
+              className="text-[9px] h-4 bg-green-50 text-green-700 border-green-200 font-black uppercase"
             >
               Online
             </Badge>
@@ -209,4 +222,5 @@ const Sidebar = ({
     </aside>
   );
 };
+
 export default Sidebar;
