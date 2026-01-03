@@ -1,7 +1,7 @@
 import { useEffect, useRef, useCallback } from "react";
 import { Client, IFrame } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
-
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
 // Define the return type of the hook for better consumption in components
 interface UseStompReturn {
   sendMessage: (destination: string, body: any) => void;
@@ -20,7 +20,7 @@ export const useStomp = (
 
     // SockJS doesn't always have perfect TS definitions depending on version, 
     // but this is the standard way to initialize it.
-    const socket = new SockJS("http://localhost:8080/ws");
+    const socket = new SockJS(`${BASE_URL}/ws`);
     
     const stompClient = new Client({
       webSocketFactory: () => socket as any,

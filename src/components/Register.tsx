@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { UserPlus, User, Lock, Type, Loader2, ArrowRight } from "lucide-react";
-
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
 // Utils
 import { apiFetch } from "@/lib/api";
 
@@ -30,7 +30,7 @@ const Register: React.FC<RegisterProps> = ({ onSwitchToLogin }) => {
     try {
       // 🟢 Using the new apiFetch pattern
       // Registration usually returns the user object or a success message
-      const res = await fetch("http://localhost:8080/api/auth/register", {
+      const res = await fetch(`${BASE_URL}/api/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

@@ -1,6 +1,8 @@
 // // src/lib/api.ts
 import { toast } from "sonner";
 
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+
 export const apiFetch = async <T>(
   endpoint: string,
   options: RequestInit = {}
@@ -22,7 +24,7 @@ export const apiFetch = async <T>(
   }
 
   try {
-    const response = await fetch(`http://localhost:8080${endpoint}`, {
+    const response = await fetch(`${BASE_URL}${endpoint}`, {
       ...options,
       headers,
     });

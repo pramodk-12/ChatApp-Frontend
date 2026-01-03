@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Paperclip, X, Send, Loader2 } from "lucide-react";
 import { UserAuth, ChatDTO } from "@/types";
 
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
 interface MessageInputProps {
   auth: UserAuth;
   activeChatId: number | null;
@@ -39,7 +40,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
     fd.append("file", file);
 
     try {
-      const res = await fetch("http://localhost:8080/api/upload", {
+      const res = await fetch(`${BASE_URL}/api/upload`, {
         method: "POST",
         headers: { Authorization: `Bearer ${auth.token}` },
         body: fd,
